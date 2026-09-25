@@ -49,10 +49,10 @@
     <div class="tab-nav__inner">
       <div class="tab-list" role="tablist">
         <button class="tab is-active" type="button" role="tab" aria-selected="true" data-tab="overview">Resumo</button>
-        <button class="tab" type="button" role="tab" aria-selected="false" data-tab="quality">Qualidade</button>
         <button class="tab" type="button" role="tab" aria-selected="false" data-tab="imports">Importações</button>
         <button class="tab" type="button" role="tab" aria-selected="false" data-tab="exports">Exportações</button>
         <button class="tab" type="button" role="tab" aria-selected="false" data-tab="products">Produtos</button>
+        <button class="tab" type="button" role="tab" aria-selected="false" data-tab="quality">Dados</button>
         <button class="tab" type="button" role="tab" aria-selected="false" data-tab="methodology">Metodologia</button>
       </div>
       <button id="theme-toggle" class="theme-toggle" type="button" aria-pressed="false" aria-label="Ativar tema escuro">
@@ -190,7 +190,7 @@
           </div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Posição</th><th>Produto e código NCM</th><th>Valor US$ FOB</th><th>Quilograma líquido</th><th>Participação</th></tr></thead>
+              <thead><tr><th>Posição</th><th>Produto e código NCM</th><th>Valor US$ FOB</th><th>Toneladas líquidas</th><th>Participação</th></tr></thead>
               <tbody id="products-table"></tbody>
             </table>
           </div>
@@ -200,14 +200,8 @@
 
     <section id="quality-view" class="content-view" hidden>
       <div class="section-heading section-heading--first">
-        <div><p class="section-kicker">Rastreabilidade</p><h2>Qualidade e integridade dos dados</h2></div>
-        <p>Resultado das verificações aplicadas antes da construção do dashboard.</p>
-      </div>
-      <div class="quality-grid">
-        <article><strong id="quality-input">—</strong><span>linhas recebidas</span></article>
-        <article><strong id="quality-output">—</strong><span>linhas consolidadas</span></article>
-        <article><strong id="quality-duplicates">—</strong><span>duplicidades exatas</span></article>
-        <article><strong id="quality-invalid">—</strong><span>campos críticos inválidos</span></article>
+        <div><p class="section-kicker">Base tratada</p><h2>Dados consolidados</h2></div>
+        <p>Informações da consolidação e das bases utilizadas na construção do dashboard.</p>
       </div>
       <article class="panel prose-panel">
         <h3>Procedimentos de validação</h3>
@@ -219,8 +213,11 @@
         </div>
       </article>
       <article class="panel panel--table">
-        <div class="panel__header"><div><p class="panel__eyebrow">Auditoria</p><h3>Bases processadas</h3></div><span class="panel__unit">14 arquivos</span></div>
-        <div class="table-wrap"><table><thead><tr><th>Arquivo</th><th>Fluxo</th><th>Entrada</th><th>Mantidas</th><th>Resultado</th></tr></thead><tbody id="quality-table"></tbody></table></div>
+        <div class="panel__header">
+          <div><p class="panel__eyebrow">Auditoria</p><h3>Bases processadas</h3></div>
+          <div class="processed-summary"><span><strong id="quality-output">—</strong> linhas consolidadas</span><span>14 arquivos</span></div>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Arquivo</th><th>Fluxo</th><th>Entrada</th><th>Mantidas</th></tr></thead><tbody id="quality-table"></tbody></table></div>
       </article>
     </section>
 
@@ -233,6 +230,11 @@
         <div class="catalog-toolbar">
           <label class="field catalog-search"><span>Buscar produto ou código NCM</span><input id="catalog-search" type="search" placeholder="Digite um nome ou código"></label>
           <div class="catalog-count" id="catalog-count" aria-live="polite">—</div>
+        </div>
+        <div class="catalog-filter-grid" aria-label="Filtros do catálogo de produtos">
+          <label class="field"><span>Fluxo</span><select id="catalog-flow"><option value="all">Importação e exportação</option><option value="0">Importação</option><option value="1">Exportação</option></select></label>
+          <label class="field"><span>Ano</span><select id="catalog-year"><option value="all">Todos os anos</option></select></label>
+          <label class="field"><span>País</span><select id="catalog-country"><option value="all">Todos os países</option></select></label>
         </div>
         <div class="table-wrap">
           <table>

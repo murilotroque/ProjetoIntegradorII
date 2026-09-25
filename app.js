@@ -8,13 +8,13 @@
   const $ = (selector) => document.querySelector(selector);
   const $$ = (selector) => Array.from(document.querySelectorAll(selector));
   const fmtInt = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 0 });
+  const fmtDecimal = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const fmtPct = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   const fmtUnit = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  const fmtTon = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 3 });
   const colors = ["#168c87", "#d97745", "#557da1", "#7d69a8", "#bc5f72", "#84a65a"];
 
   const state = { tab: "overview", year: "all", country: "all", product: null };
-  const catalogState = { page: 1, pageSize: 50, query: "" };
+  const catalogState = { page: 1, pageSize: 50, query: "", flow: "all", year: "all", country: "all" };
   const productLabelToId = new Map();
   const productSearchIndex = data.products.map((product) => `${product[0]} ${product[1]}`.toLocaleLowerCase("pt-BR"));
   const elements = {
@@ -35,13 +35,16 @@
   function formatCompact(value, unit) {
     if (!Number.isFinite(value)) return "—";
     const abs = Math.abs(value);
-    const options = { maximumFractionDigits: abs >= 1e9 ? 2 : 1 };
     let result;
-    if (abs >= 1e9) result = new Intl.NumberFormat("pt-BR", options).format(value / 1e9) + " bi";
-    else if (abs >= 1e6) result = new Intl.NumberFormat("pt-BR", options).format(value / 1e6) + " mi";
-    else if (abs >= 1e3) result = new Intl.NumberFormat("pt-BR", options).format(value / 1e3) + " mil";
-    else result = fmtInt.format(value);
+    if (abs >= 1e9) result = fmtDecimal.format(value / 1e9) + " bi";
+    else if (abs >= 1e6) result = fmtDecimal.format(value / 1e6) + " mi";
+    else if (abs >= 1e3) result = fmtDecimal.format(value / 1e3) + " mil";
+    else result = fmtDecimal.format(value);
     return unit ? `${unit} ${result}` : result;
+  }
+
+  function formatTonnes(weightKg) {
+    return `${formatCompact(weightKg / 1000)} T`;
   }
 
   function applyTheme(theme, persist = true) {
@@ -61,6 +64,8 @@
   function populateFilters() {
     data.meta.years.forEach((year) => elements.year.add(new Option(year, year)));
     data.countries.forEach((country, id) => elements.country.add(new Option(country, id)));
+    data.meta.years.forEach((year) => $("#catalog-year").add(new Option(year, year)));
+    data.countries.forEach((country, id) => $("#catalog-country").add(new Option(country, id)));
     const fragment = document.createDocumentFragment();
     data.products.forEach((product, id) => {
       const label = `${product[0]} — ${product[1]}`;
@@ -136,8 +141,8 @@
   }
 
   function updateKpis(summary) {
-    $("#kpi-fob").textContent = `US$ ${fmtInt.format(summary.fob)}`;
-    $("#kpi-weight").textContent = `${fmtTon.format(summary.weight / 1000)} T`;
+    $("#kpi-fob").textContent = formatCompact(summary.fob, "US$");
+    $("#kpi-weight").textContent = formatTonnes(summary.weight);
     $("#kpi-records").textContent = fmtInt.format(summary.records);
     $("#kpi-unit").textContent = summary.weight ? `US$ ${fmtUnit.format(summary.fob / summary.weight)}` : "—";
   }
@@ -174,7 +179,7 @@
 
   function metricTooltip(title, metrics) {
     const unit = metrics.weight ? metrics.fob / metrics.weight : 0;
-    return `<strong>${title}</strong><span>Valor FOB <b>US$ ${fmtInt.format(metrics.fob)}</b></span><span>Quilograma líquido <b>${fmtInt.format(metrics.weight)} kg</b></span><span>Registros <b>${fmtInt.format(metrics.records)}</b></span><span>Valor unitário <b>${metrics.weight ? `US$ ${fmtUnit.format(unit)}/kg` : "—"}</b></span>`;
+    return `<strong>${title}</strong><span>Valor FOB <b>${formatCompact(metrics.fob, "US$")}</b></span><span>Toneladas líquidas <b>${formatTonnes(metrics.weight)}</b></span><span>Registros <b>${fmtInt.format(metrics.records)}</b></span><span>Valor unitário <b>${metrics.weight ? `US$ ${fmtUnit.format(unit)}/kg` : "—"}</b></span>`;
   }
 
   function renderTrend(summary) {
@@ -229,7 +234,7 @@
     $("#products-table").innerHTML = tableProducts.map(([id, metrics], index) => {
       const item = data.products[id];
       const share = summary.fob ? (metrics[1] / summary.fob) * 100 : 0;
-      return `<tr class="product-table-row" tabindex="0" data-product-id="${id}" aria-label="Abrir participação por país de ${escapeHtml(item[1])}"><td class="rank">${String(index + 1).padStart(2, "0")}</td><td class="product-cell"><strong>${escapeHtml(item[1])}</strong><span>Código NCM ${escapeHtml(item[0])}</span></td><td class="numeric">US$ ${fmtInt.format(metrics[1])}</td><td class="numeric">${fmtInt.format(metrics[2])} kg</td><td class="numeric">${fmtPct.format(share)}%</td></tr>`;
+      return `<tr class="product-table-row" tabindex="0" data-product-id="${id}" aria-label="Abrir participação por país de ${escapeHtml(item[1])}"><td class="rank">${String(index + 1).padStart(2, "0")}</td><td class="product-cell"><strong>${escapeHtml(item[1])}</strong><span>Código NCM ${escapeHtml(item[0])}</span></td><td class="numeric">${formatCompact(metrics[1], "US$")}</td><td class="numeric">${formatTonnes(metrics[2])}</td><td class="numeric">${fmtPct.format(share)}%</td></tr>`;
     }).join("");
     $$("#products-table .product-table-row").forEach((row) => {
       const open = () => openProductCountryModal(Number(row.dataset.productId));
@@ -285,7 +290,7 @@
     $("#product-modal-donut").innerHTML = `<svg viewBox="0 0 42 42" aria-label="Participação por país"><circle cx="21" cy="21" r="15.9155" fill="none" stroke="#edf2f6" stroke-width="8"/>${segments}</svg><div><strong>${formatCompact(totalFob, "US$")}</strong><span>total FOB</span></div>`;
     $("#product-modal-legend").innerHTML = byCountry.map((metrics, countryId) => {
       const share = totalFob ? (metrics[1] / totalFob) * 100 : 0;
-      return `<div class="modal-country-item"><i style="background:${countryColor(countryId)}"></i><div><strong>${escapeHtml(data.countries[countryId])}</strong><span>US$ ${fmtInt.format(metrics[1])}</span></div><b>${fmtPct.format(share)}%</b></div>`;
+      return `<div class="modal-country-item"><i style="background:${countryColor(countryId)}"></i><div><strong>${escapeHtml(data.countries[countryId])}</strong><span>${formatCompact(metrics[1], "US$")}</span></div><b>${fmtPct.format(share)}%</b></div>`;
     }).join("");
     bindTooltips($(".product-modal__content"), ".modal-donut-segment", (segment) => `${metricTooltip(data.countries[Number(segment.dataset.country)], {
       records: Number(segment.dataset.records), fob: Number(segment.dataset.fob), weight: Number(segment.dataset.weight)
@@ -327,7 +332,7 @@
     const points = monthly.map((metrics) => ({ ...metrics, yearsCount, value: metrics.fob / yearsCount }));
     const labels = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
     renderMetricSeries("#seasonality-chart", labels, points, (value) => formatCompact(value), (point, label) =>
-      `<strong>${label} · média de ${point.yearsCount} ${point.yearsCount === 1 ? "ano" : "anos"}</strong><span>FOB médio mensal <b>${formatCompact(point.value, "US$")}</b></span><span>FOB acumulado <b>US$ ${fmtInt.format(point.fob)}</b></span><span>Quilograma líquido <b>${fmtInt.format(point.weight)} kg</b></span><span>Registros <b>${fmtInt.format(point.records)}</b></span>`
+      `<strong>${label} · média de ${point.yearsCount} ${point.yearsCount === 1 ? "ano" : "anos"}</strong><span>FOB médio mensal <b>${formatCompact(point.value, "US$")}</b></span><span>FOB acumulado <b>${formatCompact(point.fob, "US$")}</b></span><span>Toneladas líquidas <b>${formatTonnes(point.weight)}</b></span><span>Registros <b>${fmtInt.format(point.records)}</b></span>`
     );
   }
 
@@ -339,7 +344,7 @@
       return { records: metrics[0], fob: metrics[1], weight: metrics[2], value: metrics[2] ? metrics[1] / metrics[2] : 0 };
     });
     renderMetricSeries("#unit-value-chart", years, points, (value) => fmtUnit.format(value), (point, year) =>
-      `<strong>${data.meta.flows[flow]} · ${year}</strong><span>Valor unitário <b>US$ ${fmtUnit.format(point.value)}/kg</b></span><span>Valor FOB <b>US$ ${fmtInt.format(point.fob)}</b></span><span>Quilograma líquido <b>${fmtInt.format(point.weight)} kg</b></span><span>Registros <b>${fmtInt.format(point.records)}</b></span>`
+      `<strong>${data.meta.flows[flow]} · ${year}</strong><span>Valor unitário <b>US$ ${fmtUnit.format(point.value)}/kg</b></span><span>Valor FOB <b>${formatCompact(point.fob, "US$")}</b></span><span>Toneladas líquidas <b>${formatTonnes(point.weight)}</b></span><span>Registros <b>${fmtInt.format(point.records)}</b></span>`
     );
   }
 
@@ -385,8 +390,15 @@
   }
 
   function getCatalogRows() {
-    if (!catalogState.query) return data.rows;
-    return data.rows.filter((row) => productSearchIndex[row[3]].includes(catalogState.query));
+    const flow = catalogState.flow === "all" ? null : Number(catalogState.flow);
+    const year = catalogState.year === "all" ? null : Number(catalogState.year);
+    const country = catalogState.country === "all" ? null : Number(catalogState.country);
+    return data.rows.filter((row) =>
+      (flow === null || row[0] === flow) &&
+      (year === null || row[1] === year) &&
+      (country === null || row[2] === country) &&
+      (!catalogState.query || productSearchIndex[row[3]].includes(catalogState.query))
+    );
   }
 
   function renderCatalog() {
@@ -400,7 +412,7 @@
       const product = data.products[productId];
       return `<tr><td><span class="flow-badge flow-badge--${flow === 0 ? "import" : "export"}">${data.meta.flows[flow]}</span></td><td class="catalog-code">${escapeHtml(product[0])}</td><td>${escapeHtml(product[1])}</td><td>${year}</td><td>${escapeHtml(data.countries[country])}</td></tr>`;
     }).join("");
-    const uniqueProducts = catalogState.query ? new Set(rows.map((row) => row[3])).size : data.products.length;
+    const uniqueProducts = new Set(rows.map((row) => row[3])).size;
     $("#catalog-count").textContent = `${fmtInt.format(uniqueProducts)} produtos · ${fmtInt.format(rows.length)} combinações`;
     $("#catalog-page").textContent = `Página ${fmtInt.format(catalogState.page)} de ${fmtInt.format(totalPages)}`;
     $("#catalog-prev").disabled = catalogState.page <= 1;
@@ -409,12 +421,8 @@
 
   function renderQuality() {
     const q = data.quality.overall;
-    const invalid = q.invalid_year + q.invalid_month + q.invalid_value + q.invalid_weight + q.blank_country + q.blank_ncm;
-    $("#quality-input").textContent = fmtInt.format(q.input_rows);
     $("#quality-output").textContent = fmtInt.format(q.output_rows);
-    $("#quality-duplicates").textContent = fmtInt.format(q.duplicates);
-    $("#quality-invalid").textContent = fmtInt.format(invalid);
-    $("#quality-table").innerHTML = data.quality.files.map((file) => `<tr><td>${file["Arquivo"]}</td><td>${file["Fluxo"]}</td><td class="numeric">${fmtInt.format(file["Linhas de entrada"])}</td><td class="numeric">${fmtInt.format(file["Linhas mantidas"])}</td><td><span class="status-ok">Sem inconsistências</span></td></tr>`).join("");
+    $("#quality-table").innerHTML = data.quality.files.map((file) => `<tr><td>${file["Arquivo"]}</td><td>${file["Fluxo"]}</td><td class="numeric">${fmtInt.format(file["Linhas de entrada"])}</td><td class="numeric">${fmtInt.format(file["Linhas mantidas"])}</td></tr>`).join("");
   }
 
   function switchTab(tab) {
@@ -466,6 +474,13 @@
       catalogState.query = event.target.value.trim().toLocaleLowerCase("pt-BR");
       catalogState.page = 1;
       renderCatalog();
+    });
+    [["#catalog-flow", "flow"], ["#catalog-year", "year"], ["#catalog-country", "country"]].forEach(([selector, key]) => {
+      $(selector).addEventListener("change", (event) => {
+        catalogState[key] = event.target.value;
+        catalogState.page = 1;
+        renderCatalog();
+      });
     });
     $("#catalog-prev").addEventListener("click", () => { catalogState.page -= 1; renderCatalog(); });
     $("#catalog-next").addEventListener("click", () => { catalogState.page += 1; renderCatalog(); });
