@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Dashboard acadêmico de importações e exportações entre 2018 e 2025.">
+  <meta name="theme-color" content="#102a43">
+  <title>Análise do Comércio Exterior do Porto de Santos</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23102a43'/%3E%3Cpath d='M12 42h40M16 37l10-11 9 7 13-16' fill='none' stroke='%234fc1b5' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='48' cy='17' r='4' fill='%23f2b06b'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+
+  <header class="masthead">
+    <div class="masthead__inner">
+      <div class="institution-line">
+        <span>Projeto Integrador II</span>
+        <span aria-hidden="true">/</span>
+        <span>Análise e estudo de caso</span>
+      </div>
+      <div class="masthead__grid">
+        <div>
+          <p class="eyebrow">Comércio exterior · 2018–2025</p>
+          <h1>Análise do Comércio Exterior do Porto de Santos utilizando Produtos específicos, parceiros comerciais e sazonalidade.</h1>
+          <p class="lead">Análise dos fluxos de importação e exportação do Porto de Santos entre 2018 à 2025. Com foco nos países: China, Estados Unidos e Rússia.</p>
+        </div>
+        <dl class="study-meta" aria-label="Metadados do estudo">
+          <div><dt>Registros</dt><dd id="header-records">1.403.861</dd></div>
+          <div><dt>Bases</dt><dd>14 arquivos</dd></div>
+          <div><dt>Recorte</dt><dd>8 anos</dd></div>
+        </dl>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tab-nav" aria-label="Seções do dashboard">
+    <div class="tab-nav__inner" role="tablist">
+      <button class="tab is-active" type="button" role="tab" aria-selected="true" data-tab="overview">Resumo</button>
+      <button class="tab" type="button" role="tab" aria-selected="false" data-tab="quality">Qualidade</button>
+      <button class="tab" type="button" role="tab" aria-selected="false" data-tab="imports">Importações</button>
+      <button class="tab" type="button" role="tab" aria-selected="false" data-tab="exports">Exportações</button>
+      <button class="tab" type="button" role="tab" aria-selected="false" data-tab="products">Produtos</button>
+      <button class="tab" type="button" role="tab" aria-selected="false" data-tab="methodology">Metodologia</button>
+    </div>
+  </nav>
+
+  <main id="conteudo" class="page-shell">
+    <section id="filters-panel" class="filter-panel" aria-labelledby="filters-title">
+      <div class="filter-panel__heading">
+        <div>
+          <p class="section-kicker">Recorte analítico</p>
+          <h2 id="filters-title">Filtros da análise</h2>
+        </div>
+        <button id="reset-filters" class="button-secondary" type="button">Limpar filtros</button>
+      </div>
+      <div class="filters-grid">
+        <label class="field">
+          <span>Ano</span>
+          <select id="year-filter"><option value="all">Todos os anos</option></select>
+        </label>
+        <label class="field field--wide">
+          <span>Produto</span>
+          <input id="product-filter" type="search" list="product-options" placeholder="Todos os produtos" autocomplete="off">
+          <datalist id="product-options"></datalist>
+        </label>
+        <label class="field">
+          <span>País</span>
+          <select id="country-filter"><option value="all">Todos os países</option></select>
+        </label>
+      </div>
+      <div class="filter-status" aria-live="polite">
+        <span id="scope-label">Importações e exportações</span>
+        <span id="result-count">Carregando dados…</span>
+      </div>
+    </section>
+
+    <section id="analysis-view" aria-label="Resultados da análise">
+      <div class="section-heading section-heading--first">
+        <div>
+          <p class="section-kicker">Resultados</p>
+          <h2 id="analysis-title">Panorama consolidado</h2>
+        </div>
+        <p id="analysis-subtitle">Indicadores calculados para o recorte selecionado.</p>
+      </div>
+
+      <div class="kpi-grid" aria-label="Indicadores principais">
+        <article class="kpi-card kpi-card--primary">
+          <p>Valor US$ FOB</p><strong id="kpi-fob">—</strong><span id="kpi-fob-note">Valor total negociado</span>
+        </article>
+        <article class="kpi-card">
+          <p>Quilograma líquido</p><strong id="kpi-weight">—</strong><span>Massa total movimentada</span>
+        </article>
+        <article class="kpi-card">
+          <p>Registros da base</p><strong id="kpi-records">—</strong><span>Linhas após tratamento</span>
+        </article>
+        <article class="kpi-card">
+          <p>Valor médio</p><strong id="kpi-unit">—</strong><span>US$ FOB por quilograma</span>
+        </article>
+      </div>
+
+      <div id="empty-state" class="empty-state" hidden>
+        <strong>Nenhum resultado para este recorte.</strong>
+        <p>Altere o ano, o produto ou o país para continuar a análise.</p>
+      </div>
+
+      <div id="charts-content">
+        <div class="chart-grid chart-grid--wide">
+          <article class="panel panel--trend">
+            <div class="panel__header">
+              <div><p class="panel__eyebrow">Série temporal</p><h3>Evolução anual do valor FOB</h3></div>
+              <span class="panel__unit">US$</span>
+            </div>
+            <div id="trend-chart" class="svg-chart" role="img" aria-label="Gráfico da evolução anual do valor FOB"></div>
+            <div id="trend-legend" class="legend"></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel__header">
+              <div><p class="panel__eyebrow">Concentração geográfica</p><h3>Participação por país</h3></div>
+              <span class="panel__unit">% FOB</span>
+            </div>
+            <div class="country-layout">
+              <div id="country-donut" class="donut" role="img" aria-label="Participação dos países no valor FOB"></div>
+              <div id="country-legend" class="country-legend"></div>
+            </div>
+          </article>
+        </div>
+
+        <div id="flow-extra-charts" class="chart-grid flow-extra-charts" hidden>
+          <article class="panel">
+            <div class="panel__header">
+              <div><p class="panel__eyebrow">Sazonalidade</p><h3>Sazonalidade mensal do valor FOB</h3></div>
+              <span class="panel__unit">Média mensal</span>
+            </div>
+            <div id="seasonality-chart" class="svg-chart" role="img" aria-label="Gráfico da sazonalidade mensal do valor FOB"></div>
+            <p class="chart-note">Média do valor FOB de cada mês nos anos incluídos no recorte.</p>
+          </article>
+
+          <article class="panel">
+            <div class="panel__header">
+              <div><p class="panel__eyebrow">Eficiência econômica</p><h3>Valor unitário anual</h3></div>
+              <span class="panel__unit">US$/kg</span>
+            </div>
+            <div id="unit-value-chart" class="svg-chart" role="img" aria-label="Gráfico do valor FOB por quilograma em cada ano"></div>
+            <p class="chart-note">Razão agregada entre valor FOB e quilograma líquido; sensível à composição dos produtos.</p>
+          </article>
+        </div>
+
+        <div class="chart-grid">
+          <article class="panel">
+            <div class="panel__header">
+              <div><p class="panel__eyebrow">Estrutura da pauta</p><h3>Produtos com maior valor FOB</h3></div>
+              <span class="panel__unit">Top 10</span>
+            </div>
+            <div id="products-chart" class="bar-chart" aria-label="Ranking dos dez produtos com maior valor FOB"></div>
+          </article>
+
+          <article class="panel panel--insight">
+            <div class="panel__header">
+              <div><p class="panel__eyebrow">Leitura dos resultados</p><h3>Síntese do recorte</h3></div>
+            </div>
+            <div id="insight-list" class="insight-list"></div>
+            <p class="interpretation-note">As relações apresentadas são descritivas e não implicam causalidade.</p>
+          </article>
+        </div>
+
+        <article class="panel panel--table">
+          <div class="panel__header">
+            <div><p class="panel__eyebrow">Tabela analítica</p><h3>Principais produtos do recorte</h3><p class="table-hint">Clique em um produto para comparar sua participação entre os três países.</p></div>
+            <span class="panel__unit">Ordenado por valor FOB</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Posição</th><th>Produto e código NCM</th><th>Valor US$ FOB</th><th>Quilograma líquido</th><th>Participação</th></tr></thead>
+              <tbody id="products-table"></tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="quality-view" class="content-view" hidden>
+      <div class="section-heading section-heading--first">
+        <div><p class="section-kicker">Rastreabilidade</p><h2>Qualidade e integridade dos dados</h2></div>
+        <p>Resultado das verificações aplicadas antes da construção do dashboard.</p>
+      </div>
+      <div class="quality-grid">
+        <article><strong id="quality-input">—</strong><span>linhas recebidas</span></article>
+        <article><strong id="quality-output">—</strong><span>linhas consolidadas</span></article>
+        <article><strong id="quality-duplicates">—</strong><span>duplicidades exatas</span></article>
+        <article><strong id="quality-invalid">—</strong><span>campos críticos inválidos</span></article>
+      </div>
+      <article class="panel prose-panel">
+        <h3>Procedimentos de validação</h3>
+        <div class="methods-grid">
+          <div><span>01</span><h4>Compatibilidade</h4><p>Comparação dos cabeçalhos e da estrutura das 14 bases de origem.</p></div>
+          <div><span>02</span><h4>Tipagem</h4><p>Conversão de ano, mês, valor FOB e massa líquida para tipos numéricos e temporais.</p></div>
+          <div><span>03</span><h4>Completude</h4><p>Verificação de ano, mês, país, NCM, valor e peso em todos os registros.</p></div>
+          <div><span>04</span><h4>Unicidade</h4><p>Busca de duplicidades exatas considerando dimensões de negócio e fluxo.</p></div>
+        </div>
+      </article>
+      <article class="panel panel--table">
+        <div class="panel__header"><div><p class="panel__eyebrow">Auditoria</p><h3>Bases processadas</h3></div><span class="panel__unit">14 arquivos</span></div>
+        <div class="table-wrap"><table><thead><tr><th>Arquivo</th><th>Fluxo</th><th>Entrada</th><th>Mantidas</th><th>Resultado</th></tr></thead><tbody id="quality-table"></tbody></table></div>
+      </article>
+    </section>
+
+    <section id="products-view" class="content-view" hidden>
+      <div class="section-heading section-heading--first">
+        <div><p class="section-kicker">Base analítica</p><h2>Catálogo completo de produtos</h2></div>
+        <p>Combinações registradas por fluxo, NCM, ano e parceiro comercial.</p>
+      </div>
+      <article class="panel panel--table catalog-panel">
+        <div class="catalog-toolbar">
+          <label class="field catalog-search"><span>Buscar produto ou código NCM</span><input id="catalog-search" type="search" placeholder="Digite um nome ou código"></label>
+          <div class="catalog-count" id="catalog-count" aria-live="polite">—</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Fluxo</th><th>Código NCM</th><th>Descrição NCM</th><th>Ano</th><th>País</th></tr></thead>
+            <tbody id="catalog-table"></tbody>
+          </table>
+        </div>
+        <div class="pagination" aria-label="Paginação do catálogo">
+          <button id="catalog-prev" class="button-secondary" type="button">Anterior</button>
+          <span id="catalog-page">—</span>
+          <button id="catalog-next" class="button-secondary" type="button">Próxima</button>
+        </div>
+      </article>
+    </section>
+
+    <section id="methodology-view" class="content-view" hidden>
+      <div class="section-heading section-heading--first">
+        <div><p class="section-kicker">Projeto científico</p><h2>Desenho metodológico</h2></div>
+        <p>Estrutura de pesquisa aplicada para leitura dos fluxos comerciais.</p>
+      </div>
+      <div class="article-layout">
+        <article class="article-main">
+          <section><span class="article-number">01</span><div><h3>Objetivo</h3><p>Organizar e analisar os registros de importação e exportação do período de 2018 a 2025, permitindo comparar evolução temporal, composição por produto e concentração por país.</p></div></section>
+          <section><span class="article-number">02</span><div><h3>Unidade de análise</h3><p>Cada registro representa uma combinação informada nas bases originais por ano, mês, país, código NCM, produto, via, unidade federativa, URF, valor FOB e quilograma líquido.</p></div></section>
+          <section><span class="article-number">03</span><div><h3>Tratamento dos dados</h3><p>As duas planilhas de exportação e as doze planilhas de importação foram harmonizadas. O processo incluiu padronização de campos, tipagem, criação do período mensal, identificação do fluxo e preservação do arquivo de origem.</p></div></section>
+          <section><span class="article-number">04</span><div><h3>Estratégia analítica</h3><p>O dashboard utiliza agregações por fluxo, ano, país e produto. Valor FOB, massa líquida e número de registros são somados para cada combinação selecionada nos filtros.</p></div></section>
+          <section><span class="article-number">05</span><div><h3>Limitações</h3><p>Os resultados descrevem apenas o recorte das bases fornecidas. O número de registros não equivale necessariamente ao número de operações aduaneiras, e o valor médio por quilograma é um indicador agregado, sensível à composição dos produtos.</p></div></section>
+        </article>
+        <aside class="variable-card">
+          <p class="panel__eyebrow">Dicionário de indicadores</p>
+          <h3>Variáveis principais</h3>
+          <dl>
+            <div><dt>Valor US$ FOB</dt><dd>Valor da mercadoria no ponto de embarque, conforme informado na base.</dd></div>
+            <div><dt>Quilograma líquido</dt><dd>Massa líquida total registrada para o recorte.</dd></div>
+            <div><dt>Valor médio</dt><dd>Razão entre valor FOB e quilograma líquido.</dd></div>
+            <div><dt>Participação</dt><dd>Parcela percentual do valor FOB no total filtrado.</dd></div>
+          </dl>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="product-country-modal" class="product-modal" aria-labelledby="product-modal-title">
+    <div class="product-modal__header">
+      <div><p class="panel__eyebrow">Participação geográfica do produto</p><h2 id="product-modal-title">—</h2><p id="product-modal-subtitle">—</p></div>
+      <button id="product-modal-close" class="modal-close" type="button" aria-label="Fechar janela">×</button>
+    </div>
+    <div class="product-modal__content">
+      <div id="product-modal-donut" class="modal-donut" role="img" aria-label="Participação do produto por país"></div>
+      <div id="product-modal-legend" class="modal-country-legend"></div>
+    </div>
+    <p class="modal-note">Percentuais calculados sobre o valor FOB do produto no fluxo e no ano selecionados. O filtro de país não é aplicado neste comparativo.</p>
+  </dialog>
+
+  <footer class="site-footer">
+    <div><strong>Observatório de Comércio Exterior</strong><span>Projeto Integrador II · Base consolidada em 24/09/2026</span></div>
+    <p>Elaboração própria a partir das 14 bases fornecidas.</p>
+  </footer>
+
+  <noscript>Este dashboard precisa de JavaScript habilitado para calcular os indicadores e renderizar os gráficos.</noscript>
+  <script src="assets/data.js"></script>
+  <script src="assets/data-monthly.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

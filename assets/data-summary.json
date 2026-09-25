@@ -1,0 +1,9 @@
+{
+  "countries": 3,
+  "products": 8564,
+  "aggregateRows": 114286,
+  "monthlyAggregateRows": 730647,
+  "sourceRows": 1403861,
+  "annualBytes": 4178410,
+  "monthlyBytes": 22578161
+}
