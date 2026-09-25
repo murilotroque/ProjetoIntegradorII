@@ -27,6 +27,8 @@ Os dados foram harmonizados e agregados a partir de 14 arquivos de origem, total
 
 Os indicadores financeiros são apresentados em valor FOB (US$) e os indicadores físicos em quilograma líquido. As participações e os valores unitários são calculados diretamente sobre as agregações disponibilizadas no projeto.
 
+As 14 planilhas utilizadas como fonte estão disponíveis no diretório [`dados/`](dados/). Para a execução do dashboard, as informações tratadas e agregadas encontram-se em `assets/`.
+
 ## Estrutura
 
 ```text
@@ -38,6 +40,7 @@ Os indicadores financeiros são apresentados em valor FOB (US$) e os indicadores
 │   ├── data.js             # Agregações anuais
 │   ├── data-monthly.js     # Agregações mensais
 │   └── data-summary.json   # Resumo técnico da base
+├── dados/                   # 14 planilhas originais de importação e exportação
 └── LICENSE
 ```
 
@@ -53,7 +56,7 @@ Depois, acesse `http://localhost:4173`.
 
 ## Publicação no Vercel
 
-O projeto é uma aplicação estática: o diretório raiz já contém o `index.html` e todos os arquivos necessários. No Vercel, basta importar este repositório e manter a configuração padrão, sem etapa de build.
+O projeto é uma aplicação estática: o diretório raiz já contém o `index.html` e todos os arquivos necessários. No Vercel, basta importar este repositório e manter a configuração padrão, sem etapa de build. A pasta `dados/` é excluída automaticamente da publicação por meio do arquivo `.vercelignore`.
 
 ## Licença
 
