@@ -2,10 +2,6 @@
 
 Dashboard acadêmico para análise dos fluxos de importação e exportação do Porto de Santos entre 2018 e 2025, com foco em produtos, parceiros comerciais e sazonalidade.
 
-## Acesso
-
-- **Repositório:** [github.com/murilotroque/ProjetoIntegradorII](https://github.com/murilotroque/ProjetoIntegradorII)
-
 ## Sobre o projeto
 
 O projeto organiza e transforma dados de comércio exterior em uma interface interativa para leitura quantitativa dos fluxos vinculados ao Porto de Santos. A análise considera os países China, Estados Unidos e Rússia e permite explorar evolução temporal, composição da pauta, concentração geográfica e sazonalidade.
@@ -62,3 +58,10 @@ O projeto é uma aplicação estática: o diretório raiz já contém o `index.h
 ## Licença
 
 Distribuído sob a licença MIT. Consulte o arquivo [LICENSE](LICENSE).
+
+## Autores
+
+- Grazielly dos Santos da Costa
+- João Vitor da Silva Maia
+- Miguel Silva Pereira
+- Murilo Teixeira Roque Banuis
