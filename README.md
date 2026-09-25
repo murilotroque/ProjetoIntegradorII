@@ -54,9 +54,11 @@ python -m http.server 4173
 
 Depois, acesse `http://localhost:4173`.
 
-## Publicação no Vercel
+## Acesso ao dashboard
 
-O projeto é uma aplicação estática: o diretório raiz já contém o `index.html` e todos os arquivos necessários. No Vercel, basta importar este repositório e manter a configuração padrão, sem etapa de build. A pasta `dados/` é excluída automaticamente da publicação por meio do arquivo `.vercelignore`.
+O dashboard está publicado e pode ser acessado em:
+
+**[analiseeestudodecaso.vercel.app](https://analiseeestudodecaso.vercel.app/)**
 
 ## Licença
 
