@@ -10,6 +10,7 @@
   const fmtInt = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 0 });
   const fmtPct = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   const fmtUnit = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fmtTon = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 3 });
   const colors = ["#168c87", "#d97745", "#557da1", "#7d69a8", "#bc5f72", "#84a65a"];
 
   const state = { tab: "overview", year: "all", country: "all", product: null };
@@ -41,6 +42,20 @@
     else if (abs >= 1e3) result = new Intl.NumberFormat("pt-BR", options).format(value / 1e3) + " mil";
     else result = fmtInt.format(value);
     return unit ? `${unit} ${result}` : result;
+  }
+
+  function applyTheme(theme, persist = true) {
+    const selectedTheme = theme === "dark" ? "dark" : "light";
+    document.documentElement.dataset.theme = selectedTheme;
+    const dark = selectedTheme === "dark";
+    const toggle = $("#theme-toggle");
+    toggle.setAttribute("aria-pressed", String(dark));
+    toggle.setAttribute("aria-label", dark ? "Ativar tema claro" : "Ativar tema escuro");
+    $("#theme-label").textContent = dark ? "Tema claro" : "Tema escuro";
+    $("#theme-color").setAttribute("content", dark ? "#071522" : "#102a43");
+    if (persist) {
+      try { localStorage.setItem("comex-theme", selectedTheme); } catch (_) { /* preferência opcional */ }
+    }
   }
 
   function populateFilters() {
@@ -121,8 +136,8 @@
   }
 
   function updateKpis(summary) {
-    $("#kpi-fob").textContent = formatCompact(summary.fob, "US$");
-    $("#kpi-weight").textContent = `${formatCompact(summary.weight)} kg`;
+    $("#kpi-fob").textContent = `US$ ${fmtInt.format(summary.fob)}`;
+    $("#kpi-weight").textContent = `${fmtTon.format(summary.weight / 1000)} T`;
     $("#kpi-records").textContent = fmtInt.format(summary.records);
     $("#kpi-unit").textContent = summary.weight ? `US$ ${fmtUnit.format(summary.fob / summary.weight)}` : "—";
   }
@@ -429,6 +444,7 @@
 
   function bindEvents() {
     $$(".tab").forEach((button) => button.addEventListener("click", () => switchTab(button.dataset.tab)));
+    $("#theme-toggle").addEventListener("click", () => applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
     elements.year.addEventListener("change", () => { state.year = elements.year.value; renderAnalysis(); });
     elements.country.addEventListener("change", () => { state.country = elements.country.value; renderAnalysis(); });
     elements.product.addEventListener("change", () => {
@@ -459,6 +475,7 @@
     });
   }
 
+  applyTheme(document.documentElement.dataset.theme || "light", false);
   populateFilters();
   bindEvents();
   renderQuality();
