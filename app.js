@@ -422,7 +422,7 @@
   function renderQuality() {
     const q = data.quality.overall;
     $("#quality-output").textContent = fmtInt.format(q.output_rows);
-    $("#quality-table").innerHTML = data.quality.files.map((file) => `<tr><td>${file["Arquivo"]}</td><td>${file["Fluxo"]}</td><td class="numeric">${fmtInt.format(file["Linhas de entrada"])}</td><td class="numeric">${fmtInt.format(file["Linhas mantidas"])}</td></tr>`).join("");
+    $("#quality-table").innerHTML = data.quality.files.map((file) => `<tr><td>${escapeHtml(file["Arquivo"])}</td><td>${escapeHtml(file["Fluxo"])}</td><td class="numeric">${fmtInt.format(file["Linhas mantidas"])}</td></tr>`).join("");
   }
 
   function switchTab(tab) {

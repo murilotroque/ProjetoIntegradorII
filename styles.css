@@ -183,6 +183,11 @@ button { cursor: pointer; }
 .table-hint { margin: .35rem 0 0; color: var(--muted); font-size: .75rem; }
 .table-wrap { width: 100%; overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: .84rem; }
+.quality-table { table-layout: fixed; }
+.quality-table th:first-child { width: 60%; }
+.quality-table th:nth-child(2) { width: 18%; }
+.quality-table th:last-child { width: 22%; }
+.quality-table td:first-child { overflow-wrap: anywhere; }
 th { padding: .75rem .7rem; color: #edf5fa; background: var(--navy-800); font-size: .72rem; letter-spacing: .04em; text-align: left; text-transform: uppercase; }
 th:first-child { border-radius: 7px 0 0 0; }
 th:last-child { border-radius: 0 7px 0 0; }
