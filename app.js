@@ -20,7 +20,7 @@
   const elements = {
     year: $("#year-filter"), country: $("#country-filter"), product: $("#product-filter"),
     productOptions: $("#product-options"), reset: $("#reset-filters"), filters: $("#filters-panel"),
-    analysis: $("#analysis-view"), quality: $("#quality-view"), products: $("#products-view"), methodology: $("#methodology-view")
+    analysis: $("#analysis-view"), quality: $("#quality-view"), products: $("#products-view"), map: $("#map-view"), methodology: $("#methodology-view")
   };
 
   function escapeHtml(value) {
@@ -58,6 +58,23 @@
     $("#theme-color").setAttribute("content", dark ? "#071522" : "#102a43");
     if (persist) {
       try { localStorage.setItem("comex-theme", selectedTheme); } catch (_) { /* preferência opcional */ }
+    }
+  }
+
+  function syncFullscreenState() {
+    const toggle = $("#fullscreen-toggle");
+    const active = Boolean(document.fullscreenElement);
+    toggle.setAttribute("aria-pressed", String(active));
+    toggle.setAttribute("aria-label", active ? "Sair da tela cheia" : "Ativar tela cheia");
+    $("#fullscreen-label").textContent = active ? "Sair" : "Tela cheia";
+  }
+
+  async function toggleFullscreen() {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else await document.documentElement.requestFullscreen();
+    } catch (error) {
+      console.warn("[Tela cheia] O navegador não permitiu alterar o modo de exibição.", error);
     }
   }
 
@@ -214,15 +231,28 @@
     return [...summary.byProduct.entries()].sort((a, b) => b[1][1] - a[1][1]).slice(0, limit);
   }
 
+  function shortProductLabel(description) {
+    const rules = [
+      [/^soja/i, "Soja"], [/^óleos?/i, "Óleo"], [/^carnes?/i, "Carnes"],
+      [/^pastas?/i, "Pastas"], [/^café/i, "Café"], [/^outros açúcares/i, "Açúcar"],
+      [/^gasóleo/i, "Diesel"], [/^algodão/i, "Algodão"], [/^ferro/i, "Ferro"],
+      [/^células?/i, "Células"], [/^outros herbicidas/i, "Herbicidas"], [/^outros inseticidas/i, "Inseticidas"]
+    ];
+    const match = rules.find(([pattern]) => pattern.test(description));
+    if (match) return match[1];
+    return description.split(/[,;(]/)[0].trim().split(/\s+/).slice(0, 2).join(" ");
+  }
+
   function renderProducts(summary) {
     const products = topProducts(summary, 10);
     const max = products.length ? products[0][1][1] : 1;
     $("#products-chart").innerHTML = products.map(([id, metrics]) => {
       const item = data.products[id];
       const pct = (metrics[1] / max) * 100;
-      return `<div class="bar-row"><button class="bar-label" type="button" data-product-id="${id}" title="Filtrar por ${escapeHtml(item[0])} — ${escapeHtml(item[1])}">${escapeHtml(item[1])}</button><div class="bar-track"><div class="bar-fill" style="width:${pct.toFixed(2)}%"></div></div><span class="bar-value">${formatCompact(metrics[1], "US$")}</span></div>`;
+      const label = shortProductLabel(item[1]);
+      return `<button class="vertical-bar" type="button" data-product-id="${id}" title="Filtrar por ${escapeHtml(item[0])} — ${escapeHtml(item[1])}" aria-label="${escapeHtml(label)}: ${formatCompact(metrics[1], "US$")}. Filtrar por ${escapeHtml(item[1])}"><span class="vertical-bar__value">${formatCompact(metrics[1], "US$")}</span><span class="vertical-bar__track"><span class="vertical-bar__fill" style="height:${pct.toFixed(2)}%"></span></span><span class="vertical-bar__label">${escapeHtml(label)}</span></button>`;
     }).join("");
-    $$(".bar-label").forEach((button) => button.addEventListener("click", () => {
+    $$(".vertical-bar").forEach((button) => button.addEventListener("click", () => {
       const id = Number(button.dataset.productId);
       state.product = id;
       elements.product.value = `${data.products[id][0]} — ${data.products[id][1]}`;
@@ -437,10 +467,12 @@
     elements.analysis.hidden = !analytical;
     elements.quality.hidden = tab !== "quality";
     elements.products.hidden = tab !== "products";
+    elements.map.hidden = tab !== "map";
     elements.methodology.hidden = tab !== "methodology";
     if (analytical) renderAnalysis();
     if (tab === "quality") renderQuality();
     if (tab === "products") renderCatalog();
+    if (tab === "map" && window.COMEX_MAP) window.COMEX_MAP.show();
     window.scrollTo({ top: document.querySelector(".tab-nav").offsetTop, behavior: "smooth" });
   }
 
@@ -453,6 +485,8 @@
   function bindEvents() {
     $$(".tab").forEach((button) => button.addEventListener("click", () => switchTab(button.dataset.tab)));
     $("#theme-toggle").addEventListener("click", () => applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
+    $("#fullscreen-toggle").addEventListener("click", toggleFullscreen);
+    document.addEventListener("fullscreenchange", syncFullscreenState);
     elements.year.addEventListener("change", () => { state.year = elements.year.value; renderAnalysis(); });
     elements.country.addEventListener("change", () => { state.country = elements.country.value; renderAnalysis(); });
     elements.product.addEventListener("change", () => {
@@ -491,6 +525,8 @@
   }
 
   applyTheme(document.documentElement.dataset.theme || "light", false);
+  if (!document.fullscreenEnabled) $("#fullscreen-toggle").hidden = true;
+  syncFullscreenState();
   populateFilters();
   bindEvents();
   renderQuality();

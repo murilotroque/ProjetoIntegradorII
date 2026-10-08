@@ -25,10 +25,24 @@
 
   <header class="masthead">
     <div class="masthead__inner">
-      <div class="institution-line">
-        <span>Projeto Integrador II</span>
-        <span aria-hidden="true">/</span>
-        <span>Análise e estudo de caso</span>
+      <div class="masthead-topbar">
+        <div class="institution-line">
+          <span>Projeto Integrador II</span>
+          <span aria-hidden="true">/</span>
+          <span>Análise e estudo de caso</span>
+        </div>
+        <div class="masthead-actions" aria-label="Controles de visualização">
+          <button id="theme-toggle" class="theme-toggle header-control" type="button" aria-pressed="false" aria-label="Ativar tema escuro">
+            <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">◐</span>
+            <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">☀</span>
+            <span id="theme-label" class="header-control__label">Tema escuro</span>
+          </button>
+          <button id="fullscreen-toggle" class="fullscreen-toggle header-control" type="button" aria-pressed="false" aria-label="Ativar tela cheia">
+            <span class="fullscreen-toggle__icon fullscreen-toggle__icon--enter" aria-hidden="true">⛶</span>
+            <span class="fullscreen-toggle__icon fullscreen-toggle__icon--exit" aria-hidden="true">⤢</span>
+            <span id="fullscreen-label" class="header-control__label">Tela cheia</span>
+          </button>
+        </div>
       </div>
       <div class="masthead__grid">
         <div>
@@ -52,14 +66,10 @@
         <button class="tab" type="button" role="tab" aria-selected="false" data-tab="imports">Importações</button>
         <button class="tab" type="button" role="tab" aria-selected="false" data-tab="exports">Exportações</button>
         <button class="tab" type="button" role="tab" aria-selected="false" data-tab="products">Produtos</button>
+        <button class="tab" type="button" role="tab" aria-selected="false" data-tab="map">Mapa</button>
         <button class="tab" type="button" role="tab" aria-selected="false" data-tab="quality">Dados</button>
         <button class="tab" type="button" role="tab" aria-selected="false" data-tab="methodology">Metodologia</button>
       </div>
-      <button id="theme-toggle" class="theme-toggle" type="button" aria-pressed="false" aria-label="Ativar tema escuro">
-        <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">◐</span>
-        <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">☀</span>
-        <span id="theme-label">Tema escuro</span>
-      </button>
     </div>
   </nav>
 
@@ -250,6 +260,53 @@
       </article>
     </section>
 
+    <section id="map-view" class="content-view map-view" aria-labelledby="map-title" hidden>
+      <div class="section-heading section-heading--first">
+        <div><p class="section-kicker">Conexões internacionais</p><h2 id="map-title">Fluxo geográfico do comércio exterior</h2></div>
+        <p>Porto de Santos · China · Estados Unidos · Rússia</p>
+      </div>
+
+      <article class="map-filter-panel" aria-label="Filtros do mapa">
+        <div class="map-filters-grid">
+          <label class="field"><span>Ano</span><select id="map-year"><option value="all">Todos os anos</option></select></label>
+          <label class="field field--wide"><span>Produto</span><input id="map-product" type="search" list="map-product-options" placeholder="Todos os produtos" autocomplete="off"><datalist id="map-product-options"></datalist></label>
+          <label class="field"><span>Fluxo</span><select id="map-flow"><option value="all">Todos</option><option value="0">Importação</option><option value="1">Exportação</option></select></label>
+        </div>
+        <div class="map-filter-status" aria-live="polite">
+          <span id="map-result-count">Preparando visualização…</span>
+          <div class="map-legend" aria-label="Legenda dos fluxos">
+            <span><i class="map-legend__line map-legend__line--export"></i>Exportação <b>Santos → parceiro</b></span>
+            <span><i class="map-legend__line map-legend__line--import"></i>Importação <b>Parceiro → Santos</b></span>
+          </div>
+        </div>
+      </article>
+
+      <div class="map-layout">
+        <article class="panel map-panel">
+          <div id="map-canvas" class="map-canvas">
+            <svg id="trade-map" viewBox="0 0 960 560" role="group" aria-label="Mapa-múndi interativo com os fluxos comerciais entre o Porto de Santos, China, Estados Unidos e Rússia"></svg>
+            <div class="map-zoom-controls" aria-label="Controles do mapa">
+              <button id="map-zoom-in" type="button" aria-label="Aumentar zoom" title="Aumentar zoom">+</button>
+              <button id="map-zoom-out" type="button" aria-label="Diminuir zoom" title="Diminuir zoom">−</button>
+              <button id="map-zoom-reset" class="map-zoom-reset" type="button" aria-label="Recentralizar mapa" title="Recentralizar mapa">Recentrar</button>
+            </div>
+            <p class="map-pan-hint">Roda: zoom · arraste: mover</p>
+            <div id="map-loading" class="map-message">Carregando mapa geográfico…</div>
+            <div id="map-empty" class="map-message map-message--empty" hidden>Nenhum fluxo comercial encontrado para o recorte selecionado.</div>
+            <div id="map-tooltip" class="map-tooltip" role="tooltip" aria-hidden="true"></div>
+          </div>
+        </article>
+
+        <aside class="map-info-card" aria-labelledby="map-info-title">
+          <div class="map-info-card__header">
+            <div><p class="panel__eyebrow">Leitura do recorte</p><h3 id="map-info-title">Resumo dos parceiros</h3></div>
+            <button id="map-clear-selection" class="map-clear" type="button" hidden>Limpar seleção</button>
+          </div>
+          <div id="map-info-content" class="map-info-content" aria-live="polite"></div>
+        </aside>
+      </div>
+    </section>
+
     <section id="methodology-view" class="content-view" hidden>
       <div class="section-heading section-heading--first">
         <div><p class="section-kicker">Projeto científico</p><h2>Desenho metodológico</h2></div>
@@ -297,6 +354,9 @@
   <noscript>Este dashboard precisa de JavaScript habilitado para calcular os indicadores e renderizar os gráficos.</noscript>
   <script src="assets/data.js"></script>
   <script src="assets/data-monthly.js"></script>
+  <script src="assets/d3.v7.min.js"></script>
+  <script src="assets/world.js"></script>
+  <script src="map.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
