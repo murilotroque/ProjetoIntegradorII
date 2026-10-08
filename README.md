@@ -79,13 +79,15 @@ O dashboard está publicado e pode ser acessado em:
 
 **[analiseeestudodecaso.vercel.app](https://analiseeestudodecaso.vercel.app/)**
 
-## Licença
-
-Distribuído sob a licença MIT. Consulte o arquivo [LICENSE](LICENSE).
-
 ## Autores
 
 - Grazielly dos Santos da Costa
 - João Vitor da Silva Maia
 - Miguel Silva Pereira
 - Murilo Teixeira Roque Banuis
+
+Projeto desenvolvido na **FATEC Baixada Santista — Rubens Lara**.
+
+## Licença
+
+Este repositório está licenciado conforme o arquivo [LICENSE](LICENSE).
