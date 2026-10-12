@@ -166,6 +166,9 @@ button { cursor: pointer; }
 .chart-tooltip strong { display: block; margin-bottom: .32rem; color: #7ce0d6; font-size: .88rem; }
 .chart-tooltip span { display: flex; justify-content: space-between; gap: .85rem; color: #d8e5ee; font-size: .77rem; line-height: 1.55; }
 .chart-tooltip b { color: white; font-weight: 800; }
+.svg-chart .chart-tooltip { min-width: 225px; max-width: 300px; padding: .82rem .9rem; }
+.svg-chart .chart-tooltip strong { font-size: .93rem; }
+.svg-chart .chart-tooltip span { font-size: .81rem; line-height: 1.6; }
 .legend { display: flex; gap: 1.2rem; align-items: center; min-height: 24px; font-size: .78rem; font-weight: 700; }
 .legend span::before { content: ""; display: inline-block; width: 21px; height: 3px; margin: 0 .45rem .2rem 0; border-radius: 3px; background: var(--teal-600); }
 .legend span.export::before { background: var(--orange-500); }
