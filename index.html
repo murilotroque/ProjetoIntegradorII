@@ -156,13 +156,20 @@
         </div>
 
         <div id="flow-extra-charts" class="chart-grid flow-extra-charts" hidden>
-          <article class="panel">
+          <article class="panel panel--seasonality">
             <div class="panel__header">
               <div><p class="panel__eyebrow">Sazonalidade</p><h3>Sazonalidade mensal do valor FOB</h3></div>
-              <span class="panel__unit">Média mensal</span>
+              <div class="seasonality-tools">
+                <span id="seasonality-mode-label" class="panel__unit">Média mensal</span>
+                <label class="chart-year-filter" for="seasonality-year-filter">
+                  <select id="seasonality-year-filter" aria-label="Ano do gráfico de sazonalidade">
+                    <option value="all">Todos</option>
+                  </select>
+                </label>
+              </div>
             </div>
             <div id="seasonality-chart" class="svg-chart" role="img" aria-label="Gráfico da sazonalidade mensal do valor FOB"></div>
-            <p class="chart-note">Média do valor FOB de cada mês nos anos incluídos no recorte.</p>
+            <p id="seasonality-note" class="chart-note">Média do valor FOB de cada mês entre 2018 e 2025.</p>
           </article>
 
           <article class="panel">

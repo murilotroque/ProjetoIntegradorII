@@ -150,6 +150,13 @@ button { cursor: pointer; }
 .panel__header h3, .prose-panel h3, .variable-card h3 { margin: 0; color: var(--heading); font-family: Georgia, "Times New Roman", serif; font-size: 1.35rem; font-weight: 600; }
 .panel__eyebrow { color: var(--teal-600); }
 .panel__unit { flex: 0 0 auto; color: var(--muted); font-size: .72rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.panel--seasonality .panel__header { gap: .6rem; }
+.seasonality-tools { display: flex; align-items: center; gap: .45rem; }
+.seasonality-tools .panel__unit { font-size: .65rem; letter-spacing: .04em; }
+.panel--seasonality .panel__header h3 { font-size: 1.2rem; }
+.chart-year-filter { display: flex; align-items: center; color: var(--muted); }
+.chart-year-filter select { min-width: 72px; height: 31px; padding: 0 1.45rem 0 .45rem; color: var(--ink); background: var(--control-bg); border: 1px solid var(--input-border); border-radius: 7px; font-size: .75rem; font-weight: 700; }
+.chart-year-filter select:hover { border-color: var(--teal-600); }
 .svg-chart { position: relative; min-height: 290px; }
 .svg-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
 .chart-axis { fill: var(--chart-axis); font-family: Inter, "Segoe UI", Arial, sans-serif; font-size: 12px; font-variant-numeric: tabular-nums; font-weight: 500; }
@@ -453,6 +460,8 @@ noscript { display: block; padding: 1rem; color: #6a2b18; background: #fff1e8; t
   .product-modal__content { grid-template-columns: 1fr; justify-items: center; }
   .modal-donut { width: 210px; }
   .modal-country-legend { width: 100%; }
+  .panel--seasonality .panel__header { align-items: flex-start; flex-direction: column; }
+  .seasonality-tools { justify-content: space-between; width: 100%; }
   .svg-chart { min-height: 230px; }
   .site-footer { padding: 1.5rem 1rem; }
 }

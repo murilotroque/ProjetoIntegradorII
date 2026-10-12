@@ -14,12 +14,14 @@
   const colors = ["#168c87", "#d97745", "#557da1", "#7d69a8", "#bc5f72", "#84a65a"];
 
   const state = { tab: "overview", year: "all", country: "all", product: null };
+  const seasonalityState = { year: "all" };
   const catalogState = { page: 1, pageSize: 50, query: "", flow: "all", year: "all", country: "all" };
   const productLabelToId = new Map();
   const productSearchIndex = data.products.map((product) => `${product[0]} ${product[1]}`.toLocaleLowerCase("pt-BR"));
   const elements = {
     year: $("#year-filter"), country: $("#country-filter"), product: $("#product-filter"),
     productOptions: $("#product-options"), reset: $("#reset-filters"), filters: $("#filters-panel"),
+    seasonalityYear: $("#seasonality-year-filter"),
     analysis: $("#analysis-view"), quality: $("#quality-view"), products: $("#products-view"), map: $("#map-view"), methodology: $("#methodology-view")
   };
 
@@ -80,6 +82,7 @@
 
   function populateFilters() {
     data.meta.years.forEach((year) => elements.year.add(new Option(year, year)));
+    data.meta.years.forEach((year) => elements.seasonalityYear.add(new Option(year, year)));
     data.countries.forEach((country, id) => elements.country.add(new Option(country, id)));
     data.meta.years.forEach((year) => $("#catalog-year").add(new Option(year, year)));
     data.countries.forEach((country, id) => $("#catalog-country").add(new Option(country, id)));
@@ -115,7 +118,7 @@
 
   function filteredMonthlyRows() {
     const flow = flowForTab();
-    const year = state.year === "all" ? null : Number(state.year);
+    const year = seasonalityState.year === "all" ? null : Number(seasonalityState.year);
     const country = state.country === "all" ? null : Number(state.country);
     return monthlyRows.filter((row) =>
       (flow === null || row[0] === flow) &&
@@ -385,11 +388,16 @@
       monthly[month].fob += row[6];
       monthly[month].weight += row[7];
     }
-    const yearsCount = state.year === "all" ? data.meta.years.length : 1;
+    const selectedYear = seasonalityState.year === "all" ? null : Number(seasonalityState.year);
+    const yearsCount = selectedYear === null ? data.meta.years.length : 1;
     const points = monthly.map((metrics) => ({ ...metrics, yearsCount, value: metrics.fob / yearsCount }));
     const labels = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+    $("#seasonality-mode-label").textContent = selectedYear === null ? "Média mensal" : "Valor mensal";
+    $("#seasonality-note").textContent = selectedYear === null
+      ? `Média do valor FOB de cada mês entre ${data.meta.years[0]} e ${data.meta.years.at(-1)}.`
+      : `Valor FOB mensal detalhado de ${selectedYear}.`;
     renderMetricSeries("#seasonality-chart", labels, points, (value) => formatCompact(value), (point, label) =>
-      `<strong>${label} · média de ${point.yearsCount} ${point.yearsCount === 1 ? "ano" : "anos"}</strong><span>FOB médio mensal <b>${formatCompact(point.value, "US$")}</b></span><span>FOB acumulado <b>${formatCompact(point.fob, "US$")}</b></span><span>Toneladas líquidas <b>${formatTonnes(point.weight)}</b></span><span>Registros <b>${fmtInt.format(point.records)}</b></span>`
+      `<strong>${label} · ${selectedYear === null ? `média de ${point.yearsCount} anos` : selectedYear}</strong><span>${selectedYear === null ? "FOB médio mensal" : "Valor FOB mensal"} <b>${formatCompact(point.value, "US$")}</b></span>${selectedYear === null ? `<span>FOB acumulado <b>${formatCompact(point.fob, "US$")}</b></span>` : ""}<span>Toneladas líquidas <b>${formatTonnes(point.weight)}</b></span><span>Registros <b>${fmtInt.format(point.records)}</b></span>`
     );
   }
 
@@ -515,6 +523,10 @@
     $("#fullscreen-toggle").addEventListener("click", toggleFullscreen);
     document.addEventListener("fullscreenchange", syncFullscreenState);
     elements.year.addEventListener("change", () => { state.year = elements.year.value; renderAnalysis(); });
+    elements.seasonalityYear.addEventListener("change", () => {
+      seasonalityState.year = elements.seasonalityYear.value;
+      if (flowForTab() !== null) renderSeasonality(filteredMonthlyRows());
+    });
     elements.country.addEventListener("change", () => { state.country = elements.country.value; renderAnalysis(); });
     elements.product.addEventListener("change", () => {
       const value = elements.product.value.trim();
