@@ -161,10 +161,10 @@ button { cursor: pointer; }
 .trend-point { cursor: help; transition: r .15s ease, stroke-width .15s ease; }
 .trend-point:hover, .trend-point:focus { r: 6px; stroke-width: 4; outline: none; }
 .chart-note { margin: .1rem 0 0; color: var(--muted); font-size: .72rem; }
-.chart-tooltip { position: absolute; z-index: 20; min-width: 190px; max-width: 250px; padding: .65rem .72rem; color: white; background: rgba(8, 27, 45, .96); border: 1px solid rgba(255,255,255,.15); border-radius: 8px; box-shadow: 0 8px 24px rgba(8,27,45,.22); opacity: 0; pointer-events: none; transform: translate(-50%, calc(-100% - 12px)); transition: opacity .12s ease; }
+.chart-tooltip { position: absolute; z-index: 20; min-width: 205px; max-width: 275px; padding: .75rem .82rem; color: white; background: rgba(8, 27, 45, .96); border: 1px solid rgba(255,255,255,.15); border-radius: 9px; box-shadow: 0 8px 24px rgba(8,27,45,.22); opacity: 0; pointer-events: none; transform: translate(-50%, calc(-100% - 12px)); transition: opacity .12s ease; }
 .chart-tooltip.is-visible { opacity: 1; }
-.chart-tooltip strong { display: block; margin-bottom: .28rem; color: #7ce0d6; font-size: .82rem; }
-.chart-tooltip span { display: flex; justify-content: space-between; gap: .8rem; color: #d8e5ee; font-size: .72rem; line-height: 1.5; }
+.chart-tooltip strong { display: block; margin-bottom: .32rem; color: #7ce0d6; font-size: .88rem; }
+.chart-tooltip span { display: flex; justify-content: space-between; gap: .85rem; color: #d8e5ee; font-size: .77rem; line-height: 1.55; }
 .chart-tooltip b { color: white; font-weight: 800; }
 .legend { display: flex; gap: 1.2rem; align-items: center; min-height: 24px; font-size: .78rem; font-weight: 700; }
 .legend span::before { content: ""; display: inline-block; width: 21px; height: 3px; margin: 0 .45rem .2rem 0; border-radius: 3px; background: var(--teal-600); }
@@ -186,9 +186,9 @@ button { cursor: pointer; }
 .country-item strong { color: var(--heading); font-size: .85rem; }
 
 .bar-chart { position: relative; display: grid; grid-template-columns: repeat(10, minmax(50px, 1fr)); align-items: end; gap: .6rem; min-height: 265px; overflow-x: auto; padding: .25rem .2rem .45rem; }
-.bar-chart .chart-tooltip { min-width: 290px; max-width: 350px; text-align: left; transform: translateX(-50%); }
-.bar-chart .chart-tooltip em { display: block; margin: -.05rem 0 .48rem; color: #a9c0d0; font-size: .66rem; font-style: normal; line-height: 1.35; }
-.bar-chart .chart-tooltip__divider { margin: .45rem 0 .3rem; padding-top: .42rem; border-top: 1px solid rgba(255,255,255,.14); color: #7ce0d6; font-size: .65rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.bar-chart .chart-tooltip { min-width: 310px; max-width: 380px; text-align: left; transform: translateX(-50%); }
+.bar-chart .chart-tooltip em { display: block; margin: -.05rem 0 .52rem; color: #a9c0d0; font-size: .7rem; font-style: normal; line-height: 1.4; }
+.bar-chart .chart-tooltip__divider { margin: .5rem 0 .34rem; padding-top: .46rem; border-top: 1px solid rgba(255,255,255,.14); color: #7ce0d6; font-size: .68rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
 .bar-chart .chart-tooltip .chart-tooltip__country { display: grid; grid-template-columns: 7px 1fr auto; gap: .4rem; align-items: center; }
 .bar-chart .chart-tooltip__country i { display: block; width: 7px; height: 7px; border-radius: 2px; }
 .vertical-bar { display: grid; grid-template-rows: 30px 1fr auto; align-items: end; min-width: 50px; height: 250px; padding: 0; color: var(--heading); background: transparent; border: 0; text-align: center; transition: opacity .18s ease, transform .18s ease; }
@@ -314,11 +314,11 @@ td.numeric, th.numeric { text-align: right; font-variant-numeric: tabular-nums; 
 .map-layout.is-brazil-detail .map-location { opacity: 1; }
 .map-message { position: absolute; inset: 0; display: grid; place-items: center; padding: 2rem; color: var(--muted); background: color-mix(in srgb, var(--map-ocean) 88%, transparent); text-align: center; font-weight: 800; }
 .map-message--empty { inset: auto 50% 1.1rem auto; width: min(92%, 460px); transform: translateX(50%); padding: .8rem 1rem; color: var(--heading); background: color-mix(in srgb, var(--paper) 94%, transparent); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); }
-.map-tooltip { position: absolute; z-index: 12; width: min(270px, calc(100% - 24px)); padding: .75rem .8rem; color: white; background: rgba(8, 27, 45, .96); border: 1px solid rgba(255,255,255,.16); border-radius: 9px; box-shadow: 0 10px 28px rgba(0,0,0,.25); opacity: 0; pointer-events: none; transform: translate3d(0, 5px, 0); transition: opacity .12s ease, transform .12s ease; }
+.map-tooltip { position: absolute; z-index: 12; width: min(290px, calc(100% - 24px)); padding: .85rem .9rem; color: white; background: rgba(8, 27, 45, .96); border: 1px solid rgba(255,255,255,.16); border-radius: 10px; box-shadow: 0 10px 28px rgba(0,0,0,.25); opacity: 0; pointer-events: none; transform: translate3d(0, 5px, 0); transition: opacity .12s ease, transform .12s ease; }
 .map-tooltip.is-visible { opacity: 1; transform: none; }
-.map-tooltip strong { display: block; color: #7ce0d6; font-size: .82rem; }
-.map-tooltip em { display: block; margin: .12rem 0 .45rem; color: #b8cad7; font-size: .68rem; font-style: normal; text-transform: uppercase; letter-spacing: .08em; }
-.map-tooltip span { display: flex; justify-content: space-between; gap: .8rem; color: #d8e5ee; font-size: .72rem; line-height: 1.55; }
+.map-tooltip strong { display: block; color: #7ce0d6; font-size: .88rem; }
+.map-tooltip em { display: block; margin: .14rem 0 .5rem; color: #b8cad7; font-size: .72rem; font-style: normal; text-transform: uppercase; letter-spacing: .08em; }
+.map-tooltip span { display: flex; justify-content: space-between; gap: .85rem; color: #d8e5ee; font-size: .77rem; line-height: 1.6; }
 .map-tooltip b { color: white; text-align: right; }
 .map-zoom-controls { position: absolute; top: 1rem; right: 1rem; z-index: 8; display: grid; grid-template-columns: 38px 38px; gap: .35rem; }
 .map-zoom-controls button { display: grid; place-items: center; min-width: 38px; height: 38px; padding: 0; color: var(--heading); background: color-mix(in srgb, var(--paper) 94%, transparent); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); font-size: 1.2rem; font-weight: 800; }

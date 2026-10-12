@@ -179,7 +179,7 @@
       const targetBounds = target.getBoundingClientRect();
       const rawX = event && event.clientX ? event.clientX - bounds.left : targetBounds.left + targetBounds.width / 2 - bounds.left;
       const rawY = event && event.clientY ? event.clientY - bounds.top : targetBounds.top - bounds.top;
-      const edge = isProductChart ? Math.min(bounds.width / 2, Math.max(105, tooltip.offsetWidth / 2 + 8)) : 105;
+      const edge = Math.min(bounds.width / 2, Math.max(105, tooltip.offsetWidth / 2 + 8));
       tooltip.style.left = `${Math.max(edge, Math.min(bounds.width - edge, rawX))}px`;
       tooltip.style.top = isProductChart ? "6px" : `${Math.max(105, rawY)}px`;
     };
