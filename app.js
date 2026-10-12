@@ -15,13 +15,15 @@
 
   const state = { tab: "overview", year: "all", country: "all", product: null };
   const seasonalityState = { year: "all" };
+  const productViewState = { chartYear: "all", tableYear: "all" };
   const catalogState = { page: 1, pageSize: 50, query: "", flow: "all", year: "all", country: "all" };
   const productLabelToId = new Map();
   const productSearchIndex = data.products.map((product) => `${product[0]} ${product[1]}`.toLocaleLowerCase("pt-BR"));
   const elements = {
     year: $("#year-filter"), country: $("#country-filter"), product: $("#product-filter"),
     productOptions: $("#product-options"), reset: $("#reset-filters"), filters: $("#filters-panel"),
-    seasonalityYear: $("#seasonality-year-filter"),
+    seasonalityYear: $("#seasonality-year-filter"), productChartYear: $("#products-chart-year-filter"), productTableYear: $("#products-table-year-filter"),
+    yearField: $("#analysis-year-field"), filtersGrid: $("#analysis-filters-grid"),
     analysis: $("#analysis-view"), quality: $("#quality-view"), products: $("#products-view"), map: $("#map-view"), methodology: $("#methodology-view")
   };
 
@@ -83,6 +85,8 @@
   function populateFilters() {
     data.meta.years.forEach((year) => elements.year.add(new Option(year, year)));
     data.meta.years.forEach((year) => elements.seasonalityYear.add(new Option(year, year)));
+    data.meta.years.forEach((year) => elements.productChartYear.add(new Option(year, year)));
+    data.meta.years.forEach((year) => elements.productTableYear.add(new Option(year, year)));
     data.countries.forEach((country, id) => elements.country.add(new Option(country, id)));
     data.meta.years.forEach((year) => $("#catalog-year").add(new Option(year, year)));
     data.countries.forEach((country, id) => $("#catalog-country").add(new Option(country, id)));
@@ -104,9 +108,9 @@
     return null;
   }
 
-  function filteredRows() {
+  function filteredRows(yearValue = state.tab === "overview" ? state.year : "all") {
     const flow = flowForTab();
-    const year = state.year === "all" ? null : Number(state.year);
+    const year = yearValue === "all" ? null : Number(yearValue);
     const country = state.country === "all" ? null : Number(state.country);
     return data.rows.filter((row) =>
       (flow === null || row[0] === flow) &&
@@ -153,7 +157,7 @@
     $("#scope-label").textContent = labels[state.tab];
     $("#analysis-title").textContent = titles[state.tab];
     const filters = [];
-    if (state.year !== "all") filters.push(state.year);
+    if (state.tab === "overview" && state.year !== "all") filters.push(state.year);
     if (state.country !== "all") filters.push(data.countries[Number(state.country)]);
     if (state.product !== null) filters.push(`NCM ${data.products[state.product][0]}`);
     $("#analysis-subtitle").textContent = filters.length ? `Recorte: ${filters.join(" · ")}.` : "Indicadores calculados para todo o período disponível.";
@@ -249,9 +253,9 @@
     return description.split(/[,;(]/)[0].trim().split(/\s+/).slice(0, 2).join(" ");
   }
 
-  function productCountryMetrics(productId) {
+  function productCountryMetrics(productId, yearValue = state.tab === "overview" ? state.year : "all") {
     const flow = flowForTab();
-    const selectedYear = state.year === "all" ? null : Number(state.year);
+    const selectedYear = yearValue === "all" ? null : Number(yearValue);
     const byCountry = data.countries.map(() => [0, 0, 0]);
     for (const row of data.rows) {
       if (row[3] !== productId || (flow !== null && row[0] !== flow) || (selectedYear !== null && row[1] !== selectedYear)) continue;
@@ -277,7 +281,7 @@
     return `<strong>${escapeHtml(product[1])}</strong><em>Código NCM ${escapeHtml(product[0])} · ${escapeHtml(comparison.flowLabel)} · ${escapeHtml(String(comparison.yearLabel))}</em><span>Valor FOB <b>${formatCompact(metrics[1], "US$")}</b></span><span>Toneladas líquidas <b>${formatTonnes(metrics[2])}</b></span><span>Registros <b>${fmtInt.format(metrics[0])}</b></span><span>Participação no recorte <b>${fmtPct.format(share)}%</b></span><div class="chart-tooltip__divider">Participação por país</div>${countries}`;
   }
 
-  function renderProducts(summary) {
+  function renderProductChart(summary) {
     const products = topProducts(summary, 10);
     const max = products.length ? products[0][1][1] : 1;
     $("#products-chart").innerHTML = products.map(([id, metrics]) => {
@@ -287,9 +291,10 @@
       return `<button class="vertical-bar" type="button" data-product-id="${id}" aria-label="${escapeHtml(label)}: ${formatCompact(metrics[1], "US$")}. Filtrar por ${escapeHtml(item[1])}"><span class="vertical-bar__value">${formatCompact(metrics[1], "US$")}</span><span class="vertical-bar__track"><span class="vertical-bar__fill" style="height:${pct.toFixed(2)}%"></span></span><span class="vertical-bar__label">${escapeHtml(label)}</span></button>`;
     }).join("");
     const comparisonCache = new Map();
+    const chartYear = state.tab === "overview" ? state.year : productViewState.chartYear;
     bindTooltips($("#products-chart"), ".vertical-bar", (bar) => {
       const id = Number(bar.dataset.productId);
-      if (!comparisonCache.has(id)) comparisonCache.set(id, productCountryMetrics(id));
+      if (!comparisonCache.has(id)) comparisonCache.set(id, productCountryMetrics(id, chartYear));
       return productBarTooltip(id, summary.byProduct.get(id), summary, comparisonCache.get(id));
     });
     $$(".vertical-bar").forEach((button) => button.addEventListener("click", () => {
@@ -299,15 +304,18 @@
       renderAnalysis();
       elements.filters.scrollIntoView({ behavior: "smooth", block: "start" });
     }));
+  }
 
+  function renderProductTable(summary) {
     const tableProducts = topProducts(summary, 12);
     $("#products-table").innerHTML = tableProducts.map(([id, metrics], index) => {
       const item = data.products[id];
       const share = summary.fob ? (metrics[1] / summary.fob) * 100 : 0;
       return `<tr class="product-table-row" tabindex="0" data-product-id="${id}" aria-label="Abrir participação por país de ${escapeHtml(item[1])}"><td class="rank">${String(index + 1).padStart(2, "0")}</td><td class="product-cell"><strong>${escapeHtml(shortProductLabel(item[1]))}</strong><span>Código NCM ${escapeHtml(item[0])}</span></td><td class="numeric">${formatCompact(metrics[1], "US$")}</td><td class="numeric">${formatTonnes(metrics[2])}</td><td class="numeric">${fmtPct.format(share)}%</td></tr>`;
     }).join("");
+    const tableYear = state.tab === "overview" ? state.year : productViewState.tableYear;
     $$("#products-table .product-table-row").forEach((row) => {
-      const open = () => openProductCountryModal(Number(row.dataset.productId));
+      const open = () => openProductCountryModal(Number(row.dataset.productId), tableYear);
       row.addEventListener("click", open);
       row.addEventListener("keydown", (event) => {
         if (event.key === "Enter" || event.key === " ") { event.preventDefault(); open(); }
@@ -334,8 +342,8 @@
     })}<span>Participação <b>${fmtPct.format(Number(segment.dataset.share))}%</b></span>`);
   }
 
-  function openProductCountryModal(productId) {
-    const comparison = productCountryMetrics(productId);
+  function openProductCountryModal(productId, yearValue = state.tab === "overview" ? state.year : "all") {
+    const comparison = productCountryMetrics(productId, yearValue);
     const { byCountry, totalFob, flowLabel, yearLabel } = comparison;
     const product = data.products[productId];
     $("#product-modal-title").textContent = product[1];
@@ -403,7 +411,7 @@
 
   function renderUnitValue(summary) {
     const flow = flowForTab();
-    const years = state.year === "all" ? data.meta.years : [Number(state.year)];
+    const years = data.meta.years;
     const points = years.map((year) => {
       const metrics = summary.byYear.get(`${flow}-${year}`) || [0, 0, 0];
       return { records: metrics[0], fob: metrics[1], weight: metrics[2], value: metrics[2] ? metrics[1] / metrics[2] : 0 };
@@ -434,6 +442,10 @@
   }
 
   function renderAnalysis() {
+    const flowOnly = flowForTab() !== null;
+    elements.yearField.hidden = flowOnly;
+    elements.filtersGrid.classList.toggle("is-flow-mode", flowOnly);
+    $$(".flow-local-year").forEach((control) => { control.hidden = !flowOnly; });
     const rows = filteredRows();
     const summary = aggregate(rows);
     updateContext(rows.length);
@@ -443,13 +455,15 @@
     $("#charts-content").hidden = empty;
     if (empty) return;
     renderTrend(summary);
-    const flowOnly = flowForTab() !== null;
     $("#flow-extra-charts").hidden = !flowOnly;
     if (flowOnly) {
       renderSeasonality(filteredMonthlyRows());
       renderUnitValue(summary);
     }
-    renderProducts(summary);
+    const productChartSummary = flowOnly ? aggregate(filteredRows(productViewState.chartYear)) : summary;
+    const productTableSummary = flowOnly ? aggregate(filteredRows(productViewState.tableYear)) : summary;
+    renderProductChart(productChartSummary);
+    renderProductTable(productTableSummary);
     renderCountries(summary);
     renderInsights(summary);
   }
@@ -526,6 +540,14 @@
     elements.seasonalityYear.addEventListener("change", () => {
       seasonalityState.year = elements.seasonalityYear.value;
       if (flowForTab() !== null) renderSeasonality(filteredMonthlyRows());
+    });
+    elements.productChartYear.addEventListener("change", () => {
+      productViewState.chartYear = elements.productChartYear.value;
+      if (flowForTab() !== null) renderProductChart(aggregate(filteredRows(productViewState.chartYear)));
+    });
+    elements.productTableYear.addEventListener("change", () => {
+      productViewState.tableYear = elements.productTableYear.value;
+      if (flowForTab() !== null) renderProductTable(aggregate(filteredRows(productViewState.tableYear)));
     });
     elements.country.addEventListener("change", () => { state.country = elements.country.value; renderAnalysis(); });
     elements.product.addEventListener("change", () => {

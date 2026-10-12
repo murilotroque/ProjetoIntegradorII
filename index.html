@@ -82,8 +82,8 @@
         </div>
         <button id="reset-filters" class="button-secondary" type="button">Limpar filtros</button>
       </div>
-      <div class="filters-grid">
-        <label class="field">
+      <div id="analysis-filters-grid" class="filters-grid">
+        <label id="analysis-year-field" class="field">
           <span>Ano</span>
           <select id="year-filter"><option value="all">Todos os anos</option></select>
         </label>
@@ -183,10 +183,17 @@
         </div>
 
         <div class="chart-grid">
-          <article class="panel">
+          <article class="panel panel--products">
             <div class="panel__header">
               <div><p class="panel__eyebrow">Estrutura da pauta</p><h3>Produtos com maior valor FOB</h3></div>
-              <span class="panel__unit">Top 10</span>
+              <div class="panel-local-tools">
+                <span class="panel__unit">Top 10</span>
+                <label class="chart-year-filter flow-local-year" for="products-chart-year-filter" hidden>
+                  <select id="products-chart-year-filter" aria-label="Ano do gráfico de produtos">
+                    <option value="all">Todos</option>
+                  </select>
+                </label>
+              </div>
             </div>
             <div id="products-chart" class="bar-chart" aria-label="Ranking dos dez produtos com maior valor FOB"></div>
           </article>
@@ -203,7 +210,14 @@
         <article class="panel panel--table">
           <div class="panel__header">
             <div><p class="panel__eyebrow">Tabela analítica</p><h3>Principais produtos do recorte</h3><p class="table-hint">Clique em um produto para comparar sua participação entre os três países.</p></div>
-            <span class="panel__unit">Ordenado por valor FOB</span>
+            <div class="panel-local-tools">
+              <span class="panel__unit">Ordenado por valor FOB</span>
+              <label class="chart-year-filter flow-local-year" for="products-table-year-filter" hidden>
+                <select id="products-table-year-filter" aria-label="Ano da tabela analítica">
+                  <option value="all">Todos</option>
+                </select>
+              </label>
+            </div>
           </div>
           <div class="table-wrap">
             <table>
