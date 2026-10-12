@@ -62,6 +62,18 @@
     return `${formatCompact(weightKg / 1000)} t`;
   }
 
+  function shortProductLabel(description) {
+    const rules = [
+      [/^soja/i, "Soja"], [/^óleos?/i, "Óleo"], [/^carnes?/i, "Carnes"],
+      [/^pastas?/i, "Pastas"], [/^café/i, "Café"], [/^outros açúcares/i, "Açúcar"],
+      [/^gasóleo/i, "Diesel"], [/^algodão/i, "Algodão"], [/^ferro/i, "Ferro"],
+      [/^células?/i, "Células"], [/^outros herbicidas/i, "Herbicidas"], [/^outros inseticidas/i, "Inseticidas"]
+    ];
+    const match = rules.find(([pattern]) => pattern.test(description));
+    if (match) return match[1];
+    return description.split(/[,;(]/)[0].trim().split(/\s+/).slice(0, 2).join(" ");
+  }
+
   function flowLabel(flow) {
     return flow === 0 ? "Importação" : "Exportação";
   }
@@ -351,7 +363,7 @@
       return `<section class="map-top-products"><h4>${escapeHtml(title)}</h4>${products.length ? products.map((product, index) => `
         <div class="map-top-product">
           <b>${index + 1}</b>
-          <div><strong>${escapeHtml(product.item[0])} — ${escapeHtml(product.item[1])}</strong><span>${formatCompact(product.fob, "US$")}</span></div>
+          <div><strong>${escapeHtml(product.item[0])} — ${escapeHtml(shortProductLabel(product.item[1]))}</strong><span>${formatCompact(product.fob, "US$")}</span></div>
         </div>`).join("") : `<p>Nenhum produto encontrado neste fluxo.</p>`}</section>`;
     };
     let productSections;

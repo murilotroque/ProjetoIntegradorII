@@ -489,9 +489,9 @@
     const start = (catalogState.page - 1) * catalogState.pageSize;
     const visibleRows = rows.slice(start, start + catalogState.pageSize);
     $("#catalog-table").innerHTML = visibleRows.map((row) => {
-      const [flow, year, country, productId] = row;
+      const [flow, year, country, productId, , fob] = row;
       const product = data.products[productId];
-      return `<tr><td><span class="flow-badge flow-badge--${flow === 0 ? "import" : "export"}">${data.meta.flows[flow]}</span></td><td class="catalog-code">${escapeHtml(product[0])}</td><td>${escapeHtml(product[1])}</td><td>${year}</td><td>${escapeHtml(data.countries[country])}</td></tr>`;
+      return `<tr><td><span class="flow-badge flow-badge--${flow === 0 ? "import" : "export"}">${data.meta.flows[flow]}</span></td><td class="catalog-code">${escapeHtml(product[0])}</td><td>${escapeHtml(product[1])}</td><td class="numeric catalog-fob">${formatCompact(fob, "US$")}</td><td>${year}</td><td>${escapeHtml(data.countries[country])}</td></tr>`;
     }).join("");
     const uniqueProducts = new Set(rows.map((row) => row[3])).size;
     $("#catalog-count").textContent = `${fmtInt.format(uniqueProducts)} produtos · ${fmtInt.format(rows.length)} combinações`;
