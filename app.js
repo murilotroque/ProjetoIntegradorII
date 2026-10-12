@@ -219,7 +219,7 @@
     const lines = series.map((s) => {
       const points = s.values.map((metrics, i) => `${x(i)},${y(metrics[1])}`).join(" ");
       const cls = s.flow === 0 ? "import" : "export";
-      const circles = s.values.map((metrics, i) => `<circle class="chart-point-${cls} trend-point" cx="${x(i)}" cy="${y(metrics[1])}" r="4" tabindex="0" data-flow="${s.flow}" data-year="${years[i]}" data-records="${metrics[0]}" data-fob="${metrics[1]}" data-weight="${metrics[2]}" aria-label="${data.meta.flows[s.flow]} em ${years[i]}"></circle>`).join("");
+      const circles = s.values.map((metrics, i) => `<g class="chart-point-group"><circle class="chart-point-halo chart-point-halo-${cls}" cx="${x(i)}" cy="${y(metrics[1])}" r="7.5" aria-hidden="true"></circle><circle class="chart-point-${cls} trend-point" cx="${x(i)}" cy="${y(metrics[1])}" r="4.5" tabindex="0" data-flow="${s.flow}" data-year="${years[i]}" data-records="${metrics[0]}" data-fob="${metrics[1]}" data-weight="${metrics[2]}" aria-label="${data.meta.flows[s.flow]} em ${years[i]}"></circle></g>`).join("");
       return `<polyline class="chart-line-${cls}" points="${points}"/>${circles}`;
     }).join("");
     const chart = $("#trend-chart");
@@ -372,7 +372,7 @@
     const xLabels = labels.map((label, index) => `<text class="chart-axis" x="${x(index)}" y="${height-13}" text-anchor="middle">${label}</text>`).join("");
     const flowClass = flowForTab() === 1 ? "export" : "import";
     const polyline = points.map((point, index) => `${x(index)},${y(point.value)}`).join(" ");
-    const circles = points.map((point, index) => `<circle class="chart-point-${flowClass} trend-point extra-point" cx="${x(index)}" cy="${y(point.value)}" r="4" tabindex="0" data-index="${index}" aria-label="${labels[index]}: ${valueFormatter(point.value)}"></circle>`).join("");
+    const circles = points.map((point, index) => `<g class="chart-point-group"><circle class="chart-point-halo chart-point-halo-${flowClass}" cx="${x(index)}" cy="${y(point.value)}" r="7.5" aria-hidden="true"></circle><circle class="chart-point-${flowClass} trend-point extra-point" cx="${x(index)}" cy="${y(point.value)}" r="4.5" tabindex="0" data-index="${index}" aria-label="${labels[index]}: ${valueFormatter(point.value)}"></circle></g>`).join("");
     container.innerHTML = `<svg viewBox="0 0 ${width} ${height}" aria-hidden="true">${grid}${xLabels}<polyline class="chart-line-${flowClass}" points="${polyline}"/>${circles}</svg>`;
     bindTooltips(container, ".extra-point", (point) => tooltipFor(points[Number(point.dataset.index)], labels[Number(point.dataset.index)]));
   }

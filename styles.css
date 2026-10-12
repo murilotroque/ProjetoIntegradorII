@@ -156,10 +156,12 @@ button { cursor: pointer; }
 .chart-gridline { stroke: var(--chart-grid); stroke-width: 1; }
 .chart-line-import { fill: none; stroke: var(--teal-600); stroke-width: 3.5; }
 .chart-line-export { fill: none; stroke: var(--orange-500); stroke-width: 3.5; }
-.chart-point-import { fill: var(--paper); stroke: var(--teal-600); stroke-width: 3; }
-.chart-point-export { fill: var(--paper); stroke: var(--orange-500); stroke-width: 3; }
-.trend-point { cursor: help; transition: r .15s ease, stroke-width .15s ease; }
-.trend-point:hover, .trend-point:focus { r: 6px; stroke-width: 4; outline: none; }
+.chart-point-import, .chart-point-halo-import { --chart-point-color: var(--teal-600); }
+.chart-point-export, .chart-point-halo-export { --chart-point-color: var(--orange-500); }
+.chart-point-halo { fill: color-mix(in srgb, var(--chart-point-color) 13%, transparent); stroke: var(--chart-point-color); stroke-width: 2; opacity: .42; pointer-events: none; vector-effect: non-scaling-stroke; transition: r .18s ease, opacity .18s ease, stroke-width .18s ease; }
+.trend-point { fill: var(--chart-point-color); stroke: var(--paper); stroke-width: 2.25; cursor: help; filter: drop-shadow(0 0 3px color-mix(in srgb, var(--chart-point-color) 60%, transparent)); paint-order: stroke fill; vector-effect: non-scaling-stroke; transition: r .18s ease, stroke-width .18s ease, filter .18s ease; }
+.chart-point-group:hover .chart-point-halo, .chart-point-group:focus-within .chart-point-halo { r: 10px; opacity: .7; stroke-width: 2.5; }
+.trend-point:hover, .trend-point:focus { r: 5.75px; stroke-width: 2.75; filter: drop-shadow(0 0 6px color-mix(in srgb, var(--chart-point-color) 85%, transparent)); outline: none; }
 .chart-note { margin: .1rem 0 0; color: var(--muted); font-size: .72rem; }
 .chart-tooltip { position: absolute; z-index: 20; min-width: 205px; max-width: 275px; padding: .75rem .82rem; color: white; background: rgba(8, 27, 45, .96); border: 1px solid rgba(255,255,255,.15); border-radius: 9px; box-shadow: 0 8px 24px rgba(8,27,45,.22); opacity: 0; pointer-events: none; transform: translate(-50%, calc(-100% - 12px)); transition: opacity .12s ease; }
 .chart-tooltip.is-visible { opacity: 1; }
