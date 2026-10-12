@@ -284,7 +284,9 @@
   function renderProductChart(summary) {
     const products = topProducts(summary, 10);
     const max = products.length ? products[0][1][1] : 1;
-    $("#products-chart").innerHTML = products.map(([id, metrics]) => {
+    const chart = $("#products-chart");
+    chart.classList.toggle("is-export", flowForTab() === 1);
+    chart.innerHTML = products.map(([id, metrics]) => {
       const item = data.products[id];
       const pct = (metrics[1] / max) * 100;
       const label = shortProductLabel(item[1]);
