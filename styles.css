@@ -185,7 +185,12 @@ button { cursor: pointer; }
 .country-item span { color: var(--muted); font-size: .82rem; }
 .country-item strong { color: var(--heading); font-size: .85rem; }
 
-.bar-chart { display: grid; grid-template-columns: repeat(10, minmax(50px, 1fr)); align-items: end; gap: .6rem; min-height: 265px; overflow-x: auto; padding: .25rem .2rem .45rem; }
+.bar-chart { position: relative; display: grid; grid-template-columns: repeat(10, minmax(50px, 1fr)); align-items: end; gap: .6rem; min-height: 265px; overflow-x: auto; padding: .25rem .2rem .45rem; }
+.bar-chart .chart-tooltip { min-width: 290px; max-width: 350px; text-align: left; transform: translateX(-50%); }
+.bar-chart .chart-tooltip em { display: block; margin: -.05rem 0 .48rem; color: #a9c0d0; font-size: .66rem; font-style: normal; line-height: 1.35; }
+.bar-chart .chart-tooltip__divider { margin: .45rem 0 .3rem; padding-top: .42rem; border-top: 1px solid rgba(255,255,255,.14); color: #7ce0d6; font-size: .65rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.bar-chart .chart-tooltip .chart-tooltip__country { display: grid; grid-template-columns: 7px 1fr auto; gap: .4rem; align-items: center; }
+.bar-chart .chart-tooltip__country i { display: block; width: 7px; height: 7px; border-radius: 2px; }
 .vertical-bar { display: grid; grid-template-rows: 30px 1fr auto; align-items: end; min-width: 50px; height: 250px; padding: 0; color: var(--heading); background: transparent; border: 0; text-align: center; transition: opacity .18s ease, transform .18s ease; }
 .bar-chart:hover .vertical-bar { opacity: .38; }
 .bar-chart .vertical-bar:hover, .bar-chart .vertical-bar:focus-visible { opacity: 1; transform: translateY(-3px); }
