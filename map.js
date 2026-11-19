@@ -29,7 +29,8 @@
     count: $("#map-result-count"), infoTitle: $("#map-info-title"), info: $("#map-info-content"),
     infoEyebrow: $(".map-info-card .panel__eyebrow"),
     clear: $("#map-clear-selection"), layout: $(".map-layout"), infoCard: $(".map-info-card"),
-    zoomIn: $("#map-zoom-in"), zoomOut: $("#map-zoom-out"), zoomReset: $("#map-zoom-reset")
+    zoomIn: $("#map-zoom-in"), zoomOut: $("#map-zoom-out"), zoomReset: $("#map-zoom-reset"),
+    fullscreen: $("#map-fullscreen-toggle")
   };
 
   let initialized = false;
@@ -273,6 +274,7 @@
   }
 
   function focusCountryOnMap(countryId) {
+    if (document.fullscreenElement === view) return;
     const country = selectedCountryName(countryId);
     const feature = countryFeatures.get(country);
     if (!feature || !geoPath) return;
@@ -286,6 +288,27 @@
 
   function resetMapView() {
     transitionMap(d3.zoomIdentity);
+  }
+
+  function syncMapFullscreen() {
+    const active = document.fullscreenElement === view;
+    const label = active ? "Sair da tela cheia do mapa" : "Abrir mapa em tela cheia";
+    dom.fullscreen.textContent = active ? "Sair da tela cheia" : "Tela cheia";
+    dom.fullscreen.setAttribute("aria-label", label);
+    dom.fullscreen.title = label;
+    hideTooltip();
+    if (active && mapSvgSelection && zoomBehavior) {
+      mapSvgSelection.interrupt().call(zoomBehavior.transform, d3.zoomIdentity);
+    }
+  }
+
+  async function toggleMapFullscreen() {
+    try {
+      if (document.fullscreenElement === view) await document.exitFullscreen();
+      else await view.requestFullscreen();
+    } catch (error) {
+      console.warn("[Mapa] O navegador não permitiu alterar a tela cheia.", error);
+    }
   }
 
   function keepMapLabelsReadable(scale) {
@@ -578,6 +601,9 @@
     dom.zoomReset.addEventListener("click", () => {
       if (mapSvgSelection && zoomBehavior) mapSvgSelection.transition().duration(260).call(zoomBehavior.transform, d3.zoomIdentity);
     });
+    dom.fullscreen.hidden = !document.fullscreenEnabled;
+    dom.fullscreen.addEventListener("click", toggleMapFullscreen);
+    document.addEventListener("fullscreenchange", syncMapFullscreen);
     window.addEventListener("resize", hideTooltip, { passive: true });
   }
 
