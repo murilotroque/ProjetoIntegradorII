@@ -274,7 +274,6 @@
   }
 
   function focusCountryOnMap(countryId) {
-    if (document.fullscreenElement === view) return;
     const country = selectedCountryName(countryId);
     const feature = countryFeatures.get(country);
     if (!feature || !geoPath) return;

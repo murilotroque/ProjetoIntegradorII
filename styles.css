@@ -427,7 +427,8 @@ noscript { display: block; padding: 1rem; color: #6a2b18; background: #fff1e8; t
 @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
 @media (max-width: 1050px) {
-  .masthead__grid, .chart-grid, .chart-grid--wide, .article-layout, .map-layout { grid-template-columns: 1fr; }
+  .masthead__grid, .chart-grid, .chart-grid--wide, .article-layout { grid-template-columns: 1fr; }
+  .map-layout, .map-layout.is-detail-open { grid-template-columns: minmax(0, 1fr); }
   .study-meta { width: min(100%, 520px); }
   .kpi-grid { grid-template-columns: repeat(2, 1fr); }
   .methods-grid { grid-template-columns: repeat(2, 1fr); }
